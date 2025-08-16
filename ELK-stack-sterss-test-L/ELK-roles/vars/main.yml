@@ -1,0 +1,55 @@
+--- 
+- naem: ELK stack 
+  hosts: all[0]
+  become: true
+  gather_facts: false
+  vars:
+    ansible_user: ubuntu
+  tasks:
+  - name: Apply PVC configuration
+    shell: | 
+      k apply -f pvc.yml
+
+  - name: Get PV status
+    shell: | 
+      k get pv 
+
+  - name: Apply Elasticsearch configuration
+    shell: |
+      k apply -f elasticsearch.yml
+
+  - name: Get PVC status
+    shell: | 
+      k get pvc
+
+  - name: Get PV status
+    shell: | 
+      k get pv
+
+  - name: Get pod status
+    shell: |
+      k get po -A
+
+  - name: Get nodes status
+    shell: |
+      k get nodes -A
+
+  - name: Get all pods in all namespaces
+    shell: |
+      k get pod -A
+
+  - name: Get kibana status
+    shell: |
+      k apply kibana.yml
+
+  - name: Get all pods in all namespaces
+    shell: |
+      k get po -A -w
+
+  - name: Get logstash status
+    shell: |
+      k apply -f logstash.yml
+      
+  - name: Get all pods in all namespaces
+    shell: |
+      watch -n 1 kubectl get pods
